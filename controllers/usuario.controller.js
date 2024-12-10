@@ -4,6 +4,7 @@ import { UsuarioContenido } from '../models/usuario_contenido.js';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {Imagenes} from '../models/imagenes.model.js';
 
 function verificarCedula(cedula){
     try {
@@ -179,6 +180,43 @@ const crearUsuario = async (req, res) => {
     }
 };
 
+//controlador para subir imagenes de administrador, no requiere validaciones simplemente se pone en la base de datos la url
+
+export const subirImagenesAdmin = async (req, res) => {
+    
+        upload(req, res, async (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error al cargar las imágenes', error: err.message });
+            }
+    
+            try {
+                // Guardar las imágenes en la base de datos
+                if (req.files && req.files.length > 0) {
+    
+                    const imagenes = await Promise.all(req.files.map(async (file) => {
+                        return {
+                            str_imagen_url: `/public/uploads/${file.filename}`, // Ruta relativa al archivo
+                        };
+                    }));
+    
+                    await Imagenes.bulkCreate(imagenes);
+                }
+    
+                res.status(200).json({ message: 'Imágenes cargadas exitosamente' });
+    
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Error al cargar las imágenes', error: error.message });
+            }
+        });
+    };
+
+
+               
+    
+
+                
+
 export const subirImagenes = async (req, res) => {
 
     upload(req, res, async (err) => {
@@ -240,5 +278,6 @@ export const subirImagenes = async (req, res) => {
 export default {
     obtenerUsuarioByCedula,
     crearUsuario,
-    subirImagenes
+    subirImagenes,
+    subirImagenesAdmin,
 };
