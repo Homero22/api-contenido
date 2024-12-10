@@ -5,6 +5,8 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import {verificarCedula} from 'udv-ec'
+
 const obtenerUsuarioByCedula = async (req, res) => {
     try {
 
@@ -68,6 +70,31 @@ const crearUsuario = async (req, res) => {
 
         const { str_usuario_nombres, str_usuario_cedula, str_usuario_email, str_usuario_telefono } = req.body;
 
+        //validar cedula
+        const cedulaValida = verificarCedula(str_usuario_cedula);
+
+        if (!cedulaValida) {
+            return res.json({
+                status: false,
+                message: 'Cédula inválida',
+            });
+        }
+
+        //veri si ya existe el usuario
+        const usuarioExistente = await Usuario.findOne({
+            where: {
+                str_usuario_cedula,
+            },
+        });
+
+        if (usuarioExistente) {
+            return res.json({
+                status: false,
+                message: 'Usuario ya existe',
+            });
+        }
+
+
         const usuario = await Usuario.create({
             str_usuario_nombres,
             str_usuario_cedula,
@@ -91,7 +118,11 @@ const crearUsuario = async (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.log(error);
+        res.json({
+            status: false,
+            message:'Usuario ya existe',
+        });
     }
 };
 
