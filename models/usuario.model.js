@@ -1,6 +1,4 @@
-/**
- * Estableceremos el modelo de la tabla usuarios
- */
+
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/postgres.js'; 
 

@@ -5,7 +5,41 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import {verificarCedula} from 'udv-ec'
+function verificarCedula(cedula){
+    try {
+      const auxCedula = cedula;
+  
+      if (auxCedula.length !== 10) {
+        return false;
+      }
+  
+      const primeros2 = +auxCedula.substr(0, 2);
+  
+      if (primeros2 < 1 || primeros2 > 24) {
+        return false;
+      }
+  
+      const digitoVerificador = +(auxCedula.split('').slice(-1));
+  
+      const coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2];
+  
+      const sumaT = auxCedula.substr(0, 9).split('').reduce((p, c, i) => {
+        let aux = 0;
+  
+        const mult = (+c) * coeficientes[i];
+  
+        aux = mult > 9 ? mult - 9 : mult;
+  
+        return p + aux;
+      }, 0);
+  
+      const residuo = sumaT % 10;
+  
+      return (residuo === 0) ? (digitoVerificador === 0) : ((10 - residuo) === digitoVerificador);
+    } catch (error) {
+      return false;
+    }
+  }
 
 const obtenerUsuarioByCedula = async (req, res) => {
     try {
@@ -68,7 +102,11 @@ const upload = multer({ storage }).array('imagenes'); // Soporta múltiples imá
 const crearUsuario = async (req, res) => {
     try {
 
-        const { str_usuario_nombres, str_usuario_cedula, str_usuario_email, str_usuario_telefono } = req.body;
+        let { str_usuario_nombres, str_usuario_cedula, str_usuario_email, str_usuario_telefono } = req.body;
+
+        //mayusculas
+        
+        str_usuario_nombres = str_usuario_nombres.toUpperCase();
 
         //validar cedula
         const cedulaValida = verificarCedula(str_usuario_cedula);
@@ -87,10 +125,25 @@ const crearUsuario = async (req, res) => {
             },
         });
 
+
         if (usuarioExistente) {
             return res.json({
                 status: false,
-                message: 'Usuario ya existe',
+                message: 'Cédula ya registrada',
+            });
+        }
+
+        //verificar email
+        const emailExistente = await Usuario.findOne({
+            where: {
+                str_usuario_email,
+            },
+        });
+
+        if (emailExistente) {
+            return res.json({
+                status: false,
+                message: 'Email ya registrado',
             });
         }
 
