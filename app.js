@@ -24,6 +24,7 @@ const whiteList = [
     "http://localhost:3000",
     "http://192.168.100.151:3000",
     "http://0.0.0.0:3000",
+    "https://vive1002.vercel.app"
 
 ];
 
