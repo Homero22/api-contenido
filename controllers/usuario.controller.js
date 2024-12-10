@@ -70,6 +70,8 @@ const obtenerUsuarioByCedula = async (req, res) => {
                 usuario.dataValues.fotoentregado = imagen.str_usuario_contenido_url;
             }
         });
+
+        console.log(usuario);
         
         res.json({
             status: true,
@@ -264,7 +266,7 @@ export const subirImagenes = async (req, res) => {
                 await UsuarioContenido.bulkCreate(imagenes);
             }
 
-            res.status(200).json({ message: 'Imágenes cargadas exitosamente' });
+            res.status(200).json({ status: true, message: 'Imágenes cargadas exitosamente' });
 
         } catch (error) {
             console.error(error);
