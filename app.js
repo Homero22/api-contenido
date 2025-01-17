@@ -21,7 +21,7 @@ const app = express();
 app.use(express.json());
 const whiteList = [
     "http://localhost:4200",
-    "http://localhost:3000",
+    "http://localhost:3005",
     "http://192.168.100.151:3000",
     "http://0.0.0.0:3000",
     "https://vive1002.vercel.app"
