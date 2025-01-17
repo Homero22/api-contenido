@@ -15,11 +15,6 @@ export const Usuario=  sequelize.define('tb_usuario',
             type: DataTypes.STRING(50),
             allowNull: false
         },
-        str_usuario_email: {
-            type: DataTypes.STRING(50),
-            allowNull: true,
-            unique: true
-        },
         str_usuario_cedula: {
             type: DataTypes.STRING(50),
             allowNull: false,
@@ -46,13 +41,18 @@ export const Usuario=  sequelize.define('tb_usuario',
         },
         entregado: {
             type: DataTypes.BOOLEAN,
-            allowNull: false,
+            allowNull: true,
             defaultValue: false
         },
         codigounico: {
-            type: DataTypes.STRING(50),
+            type: DataTypes.TEXT,
             allowNull: true
         },
+        premio: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+
     },
     {
         schema: 'public',

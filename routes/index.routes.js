@@ -2,6 +2,7 @@ import { Router } from "express";
 import usuariosRoutes from "./usuarios/usuarios.routes.js";
 import loginRoutes from "./usuarios/login.routes.js";
 import registrarRoutes from "./usuarios/registrar.routes.js";
+import logsRoutes from "./usuarios/logs.routes.js";
 
 
 
@@ -34,6 +35,9 @@ router.use("/usuarios", usuariosRoutes);
 
 router.use("/login", loginRoutes);
 router.use("/registrar", registrarRoutes);
+router.use("/logs", logsRoutes);
+
+
 
 
 
