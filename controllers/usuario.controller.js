@@ -5,6 +5,8 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {Imagenes} from '../models/imagenes.model.js';
+import e from 'express';
+import { Logs } from '../models/logs.models.js';
 
 function verificarCedula(cedula){
     try {
@@ -80,6 +82,9 @@ const obtenerUsuarioByCedula = async (req, res) => {
         });
 
     } catch (error) {
+        const err = await Logs.create({
+            str_log_descripcion: error.message,
+        });
         res.status(500).json({
             status: false,
             message: error.message
@@ -105,7 +110,7 @@ const upload = multer({ storage }).array('imagenes'); // Soporta múltiples imá
 const crearUsuario = async (req, res) => {
     try {
 
-        let { str_usuario_nombres, str_usuario_cedula, str_usuario_email, str_usuario_telefono } = req.body;
+        let { str_usuario_nombres, str_usuario_cedula, str_usuario_telefono, premio, codigounico } = req.body;
 
         //mayusculas
         
@@ -136,19 +141,6 @@ const crearUsuario = async (req, res) => {
             });
         }
 
-        //verificar email
-        const emailExistente = await Usuario.findOne({
-            where: {
-                str_usuario_email,
-            },
-        });
-
-        if (emailExistente) {
-            return res.json({
-                status: false,
-                message: 'Email ya registrado',
-            });
-        }
 
 
         const usuario = await Usuario.create({
@@ -156,6 +148,8 @@ const crearUsuario = async (req, res) => {
             str_usuario_cedula,
             str_usuario_email,
             str_usuario_telefono,
+            premio,
+            codigounico,
         });
 
         //retornar usuario creado
@@ -175,10 +169,10 @@ const crearUsuario = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.json({
-            status: false,
-            message:'Usuario ya existe',
+        const err = await Logs.create({
+            str_log_descripcion: error.message,
         });
+        return error.message;
     }
 };
 
@@ -207,17 +201,15 @@ export const subirImagenesAdmin = async (req, res) => {
                 res.status(200).json({ message: 'Imágenes cargadas exitosamente' });
     
             } catch (error) {
+                const err = await Logs.create({
+                    str_log_descripcion: error.message,
+                });
                 console.error(error);
                 res.status(500).json({ message: 'Error al cargar las imágenes', error: error.message });
             }
         });
     };
-
-
                
-    
-
-                
 
 export const subirImagenes = async (req, res) => {
 
@@ -270,6 +262,9 @@ export const subirImagenes = async (req, res) => {
 
         } catch (error) {
             console.error(error);
+            const err = await Logs.create({
+                str_log_descripcion: error.message,
+            });
             res.status(500).json({ message: 'Error al cargar las imágenes', error: error.message });
         }
     });
