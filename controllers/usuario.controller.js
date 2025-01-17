@@ -146,7 +146,6 @@ const crearUsuario = async (req, res) => {
         const usuario = await Usuario.create({
             str_usuario_nombres,
             str_usuario_cedula,
-            str_usuario_email,
             str_usuario_telefono,
             premio,
             codigounico,
